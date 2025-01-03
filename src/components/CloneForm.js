@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
 
 const CloneDealForm = () => {
+  const [portalId, setPortalId] = useState('');
+  const [dealId, setDealId] = useState('');
   const [oldData, setOldData] = useState({});
   const [newData, setNewData] = useState([]);
   const [cloneCount, setCloneCount] = useState(1);
   const [selectedFields, setSelectedFields] = useState({});
-
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setPortalId(params.get('portalId') || '');
+    setDealId(params.get('dealId') || '');
+  }, []);
+  useEffect(() => {
+    if (!portalId || !dealId) return;
     const fetchDealDetails = async () => {
       try {
         const response = await fetch(
           'https://deal.hubstools.com/dealDetails?portalId=45964851&dealId=20122189458'
         );
-  
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }
@@ -114,7 +120,7 @@ const CloneDealForm = () => {
     };
   
     fetchDealDetails();
-  }, [cloneCount]);
+  }, [portalId, dealId, cloneCount]);
   
 
   const handleCloneCountChange = (e) => {
@@ -214,6 +220,10 @@ const CloneDealForm = () => {
   return (
     <div className="clone-deal-form">
       <h2 className="form-title">Clone & Duplicate Deals</h2>
+      <div className="form-group">
+        <p>Portal ID: {portalId || 'Not available'}</p>
+        <p>Deal ID: {dealId || 'Not available'}</p>
+      </div>
       <div className="form-group bold-label px-5">
         <h3 className=''>How many times do you want to clone this deal?</h3>
         <label>Number of records to be created</label>
